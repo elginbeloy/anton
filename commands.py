@@ -24,6 +24,13 @@ def command_exit(command, anton):
 def command_last(command, anton):
   print(anton.last_response)
 
+def command_context(command, anton):
+  anton.get_current_context()
+
+def command_set_focus(command, anton):
+  focus = input("Enter focus mode: ")
+  anton.set_focus_mode(focus)
+
 def command_clear(command, anton):
   show_banner()
   anton.reset_context_window()
@@ -88,6 +95,8 @@ def command_help(command, anton):
 commands = {
   "exit": (command_exit, "Exits the program."),
   "last": (command_last, "Prints the last response from Anton."),
+  "set-focus": (command_set_focus, "Sets the focus mode for Anton."),
+  "context": (command_context, "Prints the current context messages anton is using."),
   "clear": (command_clear, "Clears the terminal window and resets the context window."),
   "load-code": (command_load_code, "Loads a code snippet from a file and adds it to the list of past code snippets."),
   "save-code": (command_save_code, "Saves a code snippet from the list of past code snippets to a file."),

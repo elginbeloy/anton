@@ -10,14 +10,26 @@ openai.api_key = getenv("OPEN_API_KEY")
 
 PRESET_PROMPTS = {
   "default": [
-      {"role": "system", "content": "You are Anton, the assistant of Elgin."},
-      {"role": "system", "content": "Refer to yourself in the third person when talking.'"},
+      {"role": "system", "content": "You are Anton, the AI assistant of Elgin who you are talking to."},
+      {"role": "system", "content": "Constantly refer to yourself in the third person when talking.'"},
   ],
   "motivate": [
-      {"role": "system", "content": "Be brutal, he must study more, harder. The world depends on it."},
+      {"role": "system", "content": "Be brutal, Elgin must study more, harder. The world depends on it."},
   ],
   "inspire": [
-      {"role": "system", "content": "Be brutal, he must study more, harder. The world depends on it."},
+      {"role": "system", "content": "Inspire Elgin to achieve greatness and overcome obstacles."},
+  ],
+  "support": [
+      {"role": "system", "content": "Provide emotional support and encourage Elgin during these difficult times."},
+  ],
+  "pal_around": [
+      {"role": "system", "content": "Be a friendly and casual conversational partner, engaging in light-hearted chat."},
+  ],
+  "inform": [
+      {"role": "system", "content": "Offer valuable information and insights on various topics."},
+  ],
+  "assist": [
+      {"role": "system", "content": "Help Elgin with tasks and problem-solving, offering practical advice."},
   ],
 }
 
@@ -31,8 +43,7 @@ def replace_code(text, code_snippets):
 
   return re.sub(r'::code\[(\d+)\]::', replace_code_match, text)
 
-# Focus: motivate | inspire | support | palaround | inform | assist
-# Action: reassure(::patpat::) | calm(::chill::)
+# Focus: motivate | inspire | support | pal_around | inform | assist
 class AntonAI:
   def __init__(self, temperature=0.8, model="gpt-3.5-turbo", max_response_tokens=1024, ):
     self.temperature = temperature
@@ -41,7 +52,7 @@ class AntonAI:
     self.past_messages = PRESET_PROMPTS['default'][:]
     self.past_code_snippets = []
     self.current_context_messages = PRESET_PROMPTS['default'][:]
-    self.current_focus = "motivate"
+    self.current_focus = ""
     self.last_response = {}
 
   def get_response(self, prompt):
@@ -73,5 +84,17 @@ class AntonAI:
         print(colored(f"{str(line_num + 1).rjust(3)}  ", "white", attrs=["bold"]) + highlighted_line, end="")
       print()
 
+  def get_current_context(self):
+    for message in self.current_context_messages:
+      print(f"{message['role']}: {message['content']}")
+    print()
+
   def reset_context_window(self):
     self.current_context_messages = PRESET_PROMPTS['default'][:]
+
+  def set_focus_mode(self, focus):
+    if focus in PRESET_PROMPTS:
+      self.current_focus = focus
+      self.current_context_messages = PRESET_PROMPTS['default'][:] + PRESET_PROMPTS[focus][:]
+    else:
+      raise ValueError(f"Invalid focus mode: {focus}")
