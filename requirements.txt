@@ -3,3 +3,4 @@ openai==0.27.0
 Pygments==2.14.0
 python-dotenv==1.0.0
 termcolor==2.2.0
+pyperclip==1.8.2

@@ -40,8 +40,10 @@ def highlight_code(code, language):
     highlighted_code = highlighted_code.replace("None", colored("None", "yellow"))
     highlighted_code = highlighted_code.replace("range", colored("range", "cyan"))
     highlighted_code = highlighted_code.replace("print", colored("print", "cyan"))
-    highlighted_code = highlighted_code.replace("len", colored("print", "cyan"))
-    highlighted_code = highlighted_code.replace("input", colored("print", "cyan"))
+    highlighted_code = highlighted_code.replace("len", colored("len", "cyan"))
+    highlighted_code = highlighted_code.replace("input", colored("input", "cyan"))
+    highlighted_code = highlighted_code.replace("int", colored("int", "cyan"))
+    highlighted_code = highlighted_code.replace("str", colored("str", "cyan"))
     highlighted_code = highlighted_code.replace("(", colored("(", "magenta"))
     highlighted_code = highlighted_code.replace(")", colored(")", "magenta"))
   elif language == "rust":

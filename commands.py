@@ -1,25 +1,21 @@
 import random
 import climage
+import pyperclip
 from os import system, listdir, popen
-from utils import show_banner, remove_code_markers, add_code_markers
+from utils import show_banner, remove_code_markers, add_code_markers, highlight_code
 from termcolor import colored
 
 PICS_DIR = "/home/batch/self_internet/enjoyment/pics/"
-files = listdir(PICS_DIR)
-random.shuffle(files)
 current_file = -1
 commands = {}
 
-def get_image():
-  global current_file
-  if current_file < len(files):
-    current_file += 1
-  else:
-    current_file = 0
-  return climage.convert(PICS_DIR + files[current_file], is_unicode=True)
-
 def command_exit(command, anton):
   exit()
+
+def command_get_image(command, anton):
+  files = listdir(PICS_DIR)
+  random.shuffle(files)
+  print(climage.convert(PICS_DIR + files[0], is_unicode=True))
 
 def command_last(command, anton):
   print(anton.last_response)
@@ -35,12 +31,43 @@ def command_clear(command, anton):
   show_banner()
   anton.reset_context_window()
 
+def command_copy_code(command, anton):
+  anton.get_past_code_snippets()
+  snippet_index = input("snippet to copy: ")
+  pyperclip.copy(remove_code_markers(anton.past_code_snippets[int(snippet_index)]))
+  print(colored("Code snippet copied to clipboard!", "green", attrs=["bold"]))
+
 def command_load_code(command, anton):
+  def print_file_contents(file_contents, start=0, end=None):
+    if end is None:
+      end = len(file_contents)
+    for line_num, line in enumerate(file_contents):
+      color = "red" if start <= line_num < end else "white"
+      highlighted_line = highlight_code(line, language)
+      print(colored(f"{str(line_num).rjust(3)}  ", color, attrs=["bold"]) + highlighted_line, end="")
+
   file_name = input("file path (relative or absolute): ")
   language = input("language: ")
-  file_contents = ""
   with open(file_name, "r") as f:
-    file_contents = f.read()
+    file_contents = f.readlines()
+  print_file_contents(file_contents, -1, -1)
+  lines = input(f"lines to include [0:{len(file_contents)}, default all]: ")
+  if lines:
+    start, end = map(int, lines.split(":"))
+    while True:
+      print_file_contents(file_contents, start, end)
+      confirm = input("Are you sure? (y/n): ")
+      if confirm.lower() == "y":
+        break
+      else:
+        lines = input(f"lines to include [0:{len(file_contents)}, default all]: ")
+        if not lines:
+          start, end = 0, len(file_contents)
+          break
+      start, end = map(int, lines.split(":"))
+  else:
+    start, end = 0, len(file_contents)
+  file_contents = "".join(file_contents[start:end])
   anton.past_code_snippets.append(add_code_markers(language, file_contents))
 
 def command_save_code(command, anton):
@@ -98,6 +125,7 @@ commands = {
   "set-focus": (command_set_focus, "Sets the focus mode for Anton."),
   "context": (command_context, "Prints the current context messages anton is using."),
   "clear": (command_clear, "Clears the terminal window and resets the context window."),
+  "copy-code": (command_copy_code, "Copies a code snippet from the list of past code snippets to the clipboard."),
   "load-code": (command_load_code, "Loads a code snippet from a file and adds it to the list of past code snippets."),
   "save-code": (command_save_code, "Saves a code snippet from the list of past code snippets to a file."),
   "remove-code": (command_remove_code, "Removes a code snippet from the list of past code snippets."),
@@ -105,7 +133,7 @@ commands = {
   "update-code-lang": (command_update_code_lang, "Edits a code snippets language."),
   "code": (command_code, "Prints the list of past code snippets."),
   "$": (command_system, "Executes a system command."),
-  "imgs": (command_imgs, "Displays a random image from the pics directory."),
+  "get-image": (command_get_image, "Displays a random image from the pics directory."),
   "help": (command_help, "Prints a list of available commands and their descriptions.")
 }
 
@@ -114,3 +142,5 @@ def execute_command(command, anton):
   if command.split(" ")[0] in commands:
     cmd, _desc = commands[command.split(" ")[0]]
     cmd(command, anton)
+  else:
+    print(colored(f"Command {command} not recognized!", "red", attrs=["bold"]))
