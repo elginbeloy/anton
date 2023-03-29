@@ -31,4 +31,4 @@ You can also use `> ` to execute commands. Try `> help` for a list.
 
 ## License
 
-This project is licensed under the OOOWEEEEWOWWWEEEMAMA license. I will sue you into dust. 
+This project is licensed under the OOOWEEEEWOWWWEEEMAMA license. I will sue you into dust (all jokes). 
