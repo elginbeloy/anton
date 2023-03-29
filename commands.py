@@ -38,9 +38,16 @@ def command_copy_code(command, anton):
   print(colored("Code snippet copied to clipboard!", "green", attrs=["bold"]))
 
 def command_load_directory_code(command, anton):
-  languages = {"py": "python", "rs": "rust", "cpp": "c++", "java": "java"}
+  languages = {"py": "python", "rs": "rust", "cpp": "c++", "java": "java", "html": "html", "js": "javascript"}
   dir_to_search = input("directory to load: ")
-  files = listdir(dir_to_search)
+  try:
+    files = listdir(dir_to_search)
+  except FileNotFoundError:
+    print(colored(f"Directory {dir_to_search} not found!", "red", attrs=["bold"]))
+    return
+  except Exception as e:
+    print(colored(f"An error occurred while reading the directory {dir_to_search}: {e}", "red", attrs=["bold"]))
+    return
   for file_name in files:
     file_extension = file_name.split(".")[-1]
     if file_extension in languages.keys():
