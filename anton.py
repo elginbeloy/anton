@@ -50,7 +50,7 @@ def replace_code(text, code_snippets):
 
 # Focus: motivate | inspire | support | pal_around | inform | assist
 class AntonAI:
-  def __init__(self, temperature=0.8, model="gpt-3.5-turbo", max_response_tokens=1024, ):
+  def __init__(self, temperature=0.8, model="gpt-3.5-turbo", max_response_tokens=512):
     self.temperature = temperature
     self.model = model
     self.max_response_tokens = max_response_tokens

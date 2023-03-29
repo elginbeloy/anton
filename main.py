@@ -32,7 +32,7 @@ YOU_STR = "[" + colored("elgin", "green", attrs=["bold", "reverse"]) + "]"
 def get_response(prompt):
   response = anton.get_response(prompt)
   usage = response.usage
-  stats = f"[i: {usage.prompt_tokens} | o: {usage.completion_tokens} | t: {usage.total_tokens}/2048]"
+  stats = f"[i: {usage.prompt_tokens}/3584 | o: {usage.completion_tokens}/512 | t: {usage.total_tokens}/4096]"
   print((max(0, columns - len(stats)) * " ") + colored(stats, "white", attrs=["bold", "reverse"]))
   response = response.choices[0].message.content
   response = re.sub(r"(?<!`)`([^`]+)`(?!`)", colored(r'\g<0>', "cyan", attrs=["bold"]), response)
