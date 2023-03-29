@@ -1,10 +1,25 @@
 import re
-import readline
 import os
+from prompt_toolkit import PromptSession
+from prompt_toolkit.formatted_text import ANSI
+from prompt_toolkit.completion import Completer, Completion
 from termcolor import colored
 from anton import AntonAI
-from commands import execute_command
+from commands import execute_command, commands
 from utils import show_banner, highlight_code, get_code_language
+
+class CommandCompleter(Completer):
+  def __init__(self, commands):
+    self.commands = commands
+
+  def get_completions(self, document, complete_event):
+    if document.text.strip().startswith(">"):
+      command = document.text.split(">")[-1].strip()
+      for cmd_name in self.commands.keys():
+        if cmd_name.startswith(command):
+          yield Completion(cmd_name, start_position=-len(command))
+
+session = PromptSession(completer=CommandCompleter(commands))
 
 _, columns = os.popen('stty size', 'r').read().split()
 columns = int(columns)
@@ -26,9 +41,9 @@ def get_response(prompt):
 
 show_banner()
 while True:
-  user_input = input(f"{YOU_STR} ")
-  if user_input.startswith("> "):
-    command = user_input.replace("> ", "")
+  user_input = session.prompt(ANSI(f"{YOU_STR} "))
+  if user_input.strip().startswith(">"):
+    command = user_input.strip().replace(">", "")
     execute_command(command, anton)
   else:
     response = get_response(user_input)

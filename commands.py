@@ -37,6 +37,23 @@ def command_copy_code(command, anton):
   pyperclip.copy(remove_code_markers(anton.past_code_snippets[int(snippet_index)]))
   print(colored("Code snippet copied to clipboard!", "green", attrs=["bold"]))
 
+def command_load_directory_code(command, anton):
+  languages = {"py": "python", "rs": "rust", "cpp": "c++", "java": "java"}
+  dir_to_search = input("directory to load: ")
+  files = listdir(dir_to_search)
+  for file_name in files:
+    file_extension = file_name.split(".")[-1]
+    if file_extension in languages.keys():
+      try:
+        with open(dir_to_search + file_name, "r") as f:
+          file_contents = f.read()
+        anton.past_code_snippets.append(add_code_markers(languages[file_extension], file_contents))
+        print(colored(f"Loaded {file_name} successfully!", "green", attrs=["bold"]))
+      except FileNotFoundError:
+        print(colored(f"File {file_name} not found!", "red", attrs=["bold"]))
+      except Exception as e:
+        print(colored(f"An error occurred while reading the file {file_name}: {e}", "red", attrs=["bold"]))
+
 def command_load_code(command, anton):
   def print_file_contents(file_contents, start=0, end=None):
     if end is None:
@@ -88,8 +105,11 @@ def command_save_code(command, anton):
   anton.get_past_code_snippets()
   snippet_index = input("snippet to save: ")
   snippet_name = input("filename (w/ extension): ")
-  with open (snippet_name, "w") as f:
-    f.write(remove_code_markers(anton.past_code_snippets[int(snippet_index)]))
+  try:
+    with open(snippet_name, "w") as f:
+      f.write(remove_code_markers(anton.past_code_snippets[int(snippet_index)]))
+  except Exception as e:
+    print(colored(f"An error occurred while saving the file: {e}", "red", attrs=["bold"]))
 
 def command_remove_code(command, anton):
   anton.get_past_code_snippets()
@@ -139,6 +159,7 @@ commands = {
   "clear": (command_clear, "Clears the terminal window and resets the context window."),
   "copy-code": (command_copy_code, "Copies a code snippet from the list of past code snippets to the clipboard."),
   "load-code": (command_load_code, "Loads a code snippet from a file and adds it to the list of past code snippets."),
+  "load-dircode": (command_load_directory_code, "Loads a list of code snippets from all code files in a directory."),
   "save-code": (command_save_code, "Saves a code snippet from the list of past code snippets to a file."),
   "remove-code": (command_remove_code, "Removes a code snippet from the list of past code snippets."),
   "edit-code": (command_edit_code, "Edits a code snippet from the list of past code snippets."),
