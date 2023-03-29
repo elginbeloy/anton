@@ -135,6 +135,21 @@ def command_edit_code(command, anton):
   anton.past_code_snippets[int(snippet_index)] = add_code_markers(language, edited_snippet)
   system("rm -rf temp_snippet.txt")
 
+def command_run_code(command, anton):
+  anton.get_past_code_snippets()
+  snippet_index = input("snippet to run: ")
+  language = anton.past_code_snippets[int(snippet_index)].split("\n", 1)[0].strip("`")
+  if language == "python":
+    with open("temp_snippet.py", "w") as f:
+      f.write(remove_code_markers(anton.past_code_snippets[int(snippet_index)]))
+    system("python3 temp_snippet.py && rm -rf temp_snippet.py")
+  elif language == "bash":
+    with open("temp_snippet.sh", "w") as f:
+      f.write(remove_code_markers(anton.past_code_snippets[int(snippet_index)]))
+    system("bash temp_snippet.sh && rm -rf temp_snippet.sh")
+  else:
+    print(colored(f"Language {language} not supported for running code snippets!", "red", attrs=["bold"]))
+
 def command_update_code_lang(command, anton):
   anton.get_past_code_snippets()
   snippet_index = input("snippet to update: ")
@@ -170,6 +185,7 @@ commands = {
   "save-code": (command_save_code, "Saves a code snippet from the list of past code snippets to a file."),
   "remove-code": (command_remove_code, "Removes a code snippet from the list of past code snippets."),
   "edit-code": (command_edit_code, "Edits a code snippet from the list of past code snippets."),
+  "run_code": (command_run_code, "Runs a specific code snippet from the list of past code snippets."),
   "update-code-lang": (command_update_code_lang, "Edits a code snippets language."),
   "code": (command_code, "Prints the list of past code snippets."),
   "$": (command_system, "Executes a system command."),
