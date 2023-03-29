@@ -111,9 +111,6 @@ def command_system(command, anton):
   anton.past_code_snippets.append("```text\n" + output + "```")
   print(output)
 
-def command_imgs(command, anton):
-  print(get_image())
-
 def command_help(command, anton):
   print("List of commands:")
   for cmd_name in commands.keys():
