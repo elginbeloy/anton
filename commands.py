@@ -185,7 +185,7 @@ commands = {
   "save-code": (command_save_code, "Saves a code snippet from the list of past code snippets to a file."),
   "remove-code": (command_remove_code, "Removes a code snippet from the list of past code snippets."),
   "edit-code": (command_edit_code, "Edits a code snippet from the list of past code snippets."),
-  "run_code": (command_run_code, "Runs a specific code snippet from the list of past code snippets."),
+  "run-code": (command_run_code, "Runs a specific code snippet from the list of past code snippets."),
   "update-code-lang": (command_update_code_lang, "Edits a code snippets language."),
   "code": (command_code, "Prints the list of past code snippets."),
   "$": (command_system, "Executes a system command."),
