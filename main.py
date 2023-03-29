@@ -13,8 +13,8 @@ class CommandCompleter(Completer):
     self.commands = commands
 
   def get_completions(self, document, complete_event):
-    if document.text.strip().startswith(">"):
-      command = document.text.split(">")[-1].strip()
+    if document.text.replace(" ", "").startswith(">"):
+      command = document.text.replace(" ", "").replace(">", "")
       for cmd_name in self.commands.keys():
         if cmd_name.startswith(command):
           yield Completion(cmd_name, start_position=-len(command))
@@ -42,8 +42,8 @@ def get_response(prompt):
 show_banner()
 while True:
   user_input = session.prompt(ANSI(f"{YOU_STR} "))
-  if user_input.strip().startswith(">"):
-    command = user_input.strip().replace(">", "")
+  if user_input.replace(" ", "").startswith(">"):
+    command = user_input.replace(" ", "").replace(">", "")
     execute_command(command, anton)
   else:
     response = get_response(user_input)
