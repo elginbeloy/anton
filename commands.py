@@ -48,23 +48,37 @@ def command_load_code(command, anton):
 
   file_name = input("file path (relative or absolute): ")
   language = input("language: ")
-  with open(file_name, "r") as f:
-    file_contents = f.readlines()
+  try:
+    with open(file_name, "r") as f:
+      file_contents = f.readlines()
+  except FileNotFoundError:
+    print("File not found. Please check the file path and try again.")
+    return
+  except Exception as e:
+    print(f"An error occurred while reading the file: {e}")
+    return
   print_file_contents(file_contents, -1, -1)
   lines = input(f"lines to include [0:{len(file_contents)}, default all]: ")
   if lines:
-    start, end = map(int, lines.split(":"))
-    while True:
-      print_file_contents(file_contents, start, end)
-      confirm = input("Are you sure? (y/n): ")
-      if confirm.lower() == "y":
-        break
-      else:
-        lines = input(f"lines to include [0:{len(file_contents)}, default all]: ")
-        if not lines:
-          start, end = 0, len(file_contents)
-          break
+    try:
       start, end = map(int, lines.split(":"))
+      while True:
+        print_file_contents(file_contents, start, end)
+        confirm = input("Are you sure? (y/n): ")
+        if confirm.lower() == "y":
+          break
+        else:
+          lines = input(f"lines to include [0:{len(file_contents)}, default all]: ")
+          if not lines:
+            start, end = 0, len(file_contents)
+            break
+          start, end = map(int, lines.split(":"))
+    except ValueError:
+      print("Invalid input. Please enter the lines to include in the format 'start:end'.")
+      return
+    except Exception as e:
+      print(f"An error occurred while processing your input: {e}")
+      return
   else:
     start, end = 0, len(file_contents)
   file_contents = "".join(file_contents[start:end])
@@ -114,7 +128,8 @@ def command_system(command, anton):
 def command_help(command, anton):
   print("List of commands:")
   for cmd_name in commands.keys():
-    print(f"➜ {colored(cmd_name, 'cyan')}: {commands[cmd_name][1]}")
+    print(f"{colored(('> ' + cmd_name), 'cyan', attrs=['bold'])}: ", end="")
+    print(commands[cmd_name][1])
 
 commands = {
   "exit": (command_exit, "Exits the program."),
