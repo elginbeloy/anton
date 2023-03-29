@@ -3,10 +3,30 @@ import os
 from prompt_toolkit import PromptSession
 from prompt_toolkit.formatted_text import ANSI
 from prompt_toolkit.completion import Completer, Completion
+from prompt_toolkit.styles import Style, style_from_pygments_cls
+from prompt_toolkit.lexers import PygmentsLexer
+from pygments.lexer import RegexLexer
+from pygments.style import Style as PygmentsStyle
+from pygments.token import Token
 from termcolor import colored
 from anton import AntonAI
 from commands import execute_command, commands
 from utils import show_banner, highlight_code, get_code_language
+
+class CustomLexer(RegexLexer):
+  tokens = {
+    "root": [
+      (r'::code\[\d\]::', Token.CodeElement),
+      (r'[^:]+', Token.Text),
+      (r':', Token.Text),
+    ],
+  }
+
+class CustomStyle(PygmentsStyle):
+  default_style = ""
+  styles = {
+    Token.CodeElement: '#00FF00',
+  }
 
 class CommandCompleter(Completer):
   def __init__(self, commands):
@@ -40,8 +60,9 @@ def get_response(prompt):
   return response
 
 show_banner()
+style = style_from_pygments_cls(CustomStyle)
 while True:
-  user_input = session.prompt(ANSI(f"{YOU_STR} "))
+  user_input = session.prompt(ANSI(f"{YOU_STR} "), lexer=PygmentsLexer(CustomLexer), style=style)
   if user_input.replace(" ", "").startswith(">"):
     command = user_input.replace(" ", "").replace(">", "")
     execute_command(command, anton)
