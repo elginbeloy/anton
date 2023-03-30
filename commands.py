@@ -1,6 +1,7 @@
 import random
 import climage
 import pyperclip
+from termcolor import colored
 from os import system, listdir, popen
 from utils import show_banner, remove_code_markers, add_code_markers, highlight_code
 from termcolor import colored
@@ -46,8 +47,12 @@ def command_set_temperature(command, anton):
     print(colored("Invalid temperature amount!", "red", attrs=["bold"]))
 
 def command_set_focus(command, anton):
-  focus = input("Enter focus mode: ")
-  anton.set_focus_mode(focus)
+  try:
+    print(colored("motivate | inspire | support | pal_around | inform | assist | add_command", "green", attrs=["bold"]))
+    focus = input("Enter focus mode: ")
+    anton.set_focus_mode(focus)
+  except ValueError:
+    print(colored("Invalid focus mode!", "red", attrs=["bold"]))
 
 def command_clear(command, anton):
   show_banner()

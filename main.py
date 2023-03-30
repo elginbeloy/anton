@@ -63,6 +63,8 @@ show_banner()
 style = style_from_pygments_cls(CustomStyle)
 while True:
   user_input = session.prompt(ANSI(f"{YOU_STR} "), lexer=PygmentsLexer(CustomLexer), style=style)
+  if not user_input:
+    continue
   if user_input.replace(" ", "").startswith(">"):
     command = user_input.replace(" ", "").replace(">", "")
     execute_command(command, anton)
