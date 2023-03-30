@@ -66,8 +66,10 @@ class AntonAI:
       raise ValueError
     self.temperature = temperature
 
-  def set_max_response_tokens(self, new_amount):
-    self.max_response_tokens = new_amount
+  def set_max_response_tokens(self, max_tokens):
+    if max_tokens > 2048:
+      raise ValueError
+    self.max_response_tokens = max_tokens
 
   def reset_context_window(self):
     self.current_context_messages = PRESET_PROMPTS['default'][:]
