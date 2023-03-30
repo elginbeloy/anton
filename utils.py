@@ -20,7 +20,7 @@ BANNER = r'''
      \/__/         \/__/                       \/__/         \/__/    
 v1.1 by Elgin Beloy                                                   
 '''
-IMAGE_BANNER = climage.convert('./anton-image.jpg', is_unicode=True)
+IMAGE_BANNER = climage.convert('./favicon.png', is_unicode=True)
 
 def show_banner():
   os.system("clear")

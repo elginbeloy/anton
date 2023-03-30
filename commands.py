@@ -17,6 +17,14 @@ def command_get_image(command, anton):
   random.shuffle(files)
   print(climage.convert(PICS_DIR + files[0], is_unicode=True))
 
+def command_create_image(command, anton):
+  prompt = input("image to create: ")
+  amount = int(input("# of images: "))
+  if amount < 1 or amount > 10:
+    print(colored("Invalid amount!", "red", attrs=["bold"]))
+    return
+  print(anton.create_image(prompt, amount))
+
 def command_last(command, anton):
   print(anton.last_response)
 
@@ -209,6 +217,7 @@ commands = {
   "code": (command_code, "Prints the list of past code snippets."),
   "$": (command_system, "Executes a system command."),
   "get-image": (command_get_image, "Displays a random image from the pics directory."),
+  "create-image": (command_create_image, "Creates an image based on the given prompt."),
   "help": (command_help, "Prints a list of available commands and their descriptions.")
 }
 

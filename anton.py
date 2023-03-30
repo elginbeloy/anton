@@ -114,3 +114,11 @@ class AntonAI:
     for message in self.current_context_messages:
       print(f"{colored(message['role'], 'red')}: {message['content']}")
     print()
+
+  def create_image(self, prompt, amount):
+    response = openai.Image.create(
+      prompt=prompt,
+      n=amount,
+      size="1024x1024",
+    )
+    return response
