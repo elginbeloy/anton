@@ -60,6 +60,25 @@ class AntonAI:
     self.current_focus = ""
     self.last_response = {}
 
+  def set_temperature(self, temperature):
+    temperature = float(temperature)
+    if temperature > 1.8:
+      raise ValueError
+    self.temperature = temperature
+
+  def set_max_response_tokens(self, new_amount):
+    self.max_response_tokens = new_amount
+
+  def reset_context_window(self):
+    self.current_context_messages = PRESET_PROMPTS['default'][:]
+
+  def set_focus_mode(self, focus):
+    if focus in PRESET_PROMPTS:
+      self.current_focus = focus
+      self.current_context_messages = PRESET_PROMPTS['default'][:] + PRESET_PROMPTS[focus][:]
+    else:
+      raise ValueError(f"Invalid focus mode: {focus}")
+
   def get_response(self, prompt):
     prompt = replace_code(prompt, self.past_code_snippets)
     self.past_messages.append({"role": "user", "content": prompt})
@@ -93,13 +112,3 @@ class AntonAI:
     for message in self.current_context_messages:
       print(f"{colored(message['role'], 'red')}: {message['content']}")
     print()
-
-  def reset_context_window(self):
-    self.current_context_messages = PRESET_PROMPTS['default'][:]
-
-  def set_focus_mode(self, focus):
-    if focus in PRESET_PROMPTS:
-      self.current_focus = focus
-      self.current_context_messages = PRESET_PROMPTS['default'][:] + PRESET_PROMPTS[focus][:]
-    else:
-      raise ValueError(f"Invalid focus mode: {focus}")

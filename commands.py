@@ -23,6 +23,20 @@ def command_last(command, anton):
 def command_context(command, anton):
   anton.get_current_context()
 
+def command_set_max_response_tokens(command, anton):
+  try:
+    max_response_tokens = int(input("max response tokens (/2048): "))
+    anton.set_max_response_tokens(max_response_tokens)
+  except ValueError:
+    print(colored("Invalid token amount!", "red", attrs=["bold"]))
+
+def command_set_temperature(command, anton):
+  try:
+    temperature = float(input("temperature (0-1.8): "))
+    anton.set_temperature(temperature)
+  except ValueError:
+    print(colored("Invalid temperature amount!", "red", attrs=["bold"]))
+
 def command_set_focus(command, anton):
   focus = input("Enter focus mode: ")
   anton.set_focus_mode(focus)
@@ -33,9 +47,12 @@ def command_clear(command, anton):
 
 def command_copy_code(command, anton):
   anton.get_past_code_snippets()
-  snippet_index = input("snippet to copy: ")
-  pyperclip.copy(remove_code_markers(anton.past_code_snippets[int(snippet_index)]))
-  print(colored("Code snippet copied to clipboard!", "green", attrs=["bold"]))
+  try:
+    snippet_index = int(input("snippet to copy: "))
+    pyperclip.copy(remove_code_markers(anton.past_code_snippets[snippet_index]))
+    print(colored("Code snippet copied to clipboard!", "green", attrs=["bold"]))
+  except ValueError:
+    print(colored("Invalid snippet index!", "red", attrs=["bold"]))
 
 def command_load_directory_code(command, anton):
   languages = {"py": "python", "rs": "rust", "cpp": "c++", "java": "java", "html": "html", "js": "javascript"}
@@ -178,6 +195,8 @@ commands = {
   "last": (command_last, "Prints the last response from Anton."),
   "set-focus": (command_set_focus, "Sets the focus mode for Anton."),
   "context": (command_context, "Prints the current context messages anton is using."),
+  "set-max-response": (command_set_max_response_tokens, "Sets the maximum number of tokens in an Anton response."),
+  "set-temperature": (command_set_temperature, "Sets the temperature for generating Anton's responses."),
   "clear": (command_clear, "Clears the terminal window and resets the context window."),
   "copy-code": (command_copy_code, "Copies a code snippet from the list of past code snippets to the clipboard."),
   "load-code": (command_load_code, "Loads a code snippet from a file and adds it to the list of past code snippets."),
