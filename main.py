@@ -48,7 +48,7 @@ columns = int(columns)
 anton = AntonAI(temperature=0.4)
 
 ANTON_STR = "[" + colored("anton", "cyan", attrs=["bold", "reverse"]) + "]"
-YOU_STR = "[" + colored("elgin", "green", attrs=["bold", "reverse"]) + "]"
+YOU_STR = "[" + colored("you", "green", attrs=["bold", "reverse"]) + "]"
 
 def get_response(prompt):
   response = anton.get_response(prompt)
