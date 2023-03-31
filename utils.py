@@ -77,8 +77,8 @@ def remove_code_markers(snippet):
   lines = snippet.split("\n")
   if len(lines) < 3:
     return snippet  # Invalid code snippet format
-  if lines[0].startswith("```") and lines[-1] == "```":
-    return "\n".join(lines[1:-1])
+  if lines[0].startswith("```") and snippet.endswith("```"):
+    return "\n".join(lines[1:]).replace("```", "")
   
 
 def add_code_markers(language, snippet):

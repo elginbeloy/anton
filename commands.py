@@ -1,6 +1,8 @@
 import random
 import climage
 import pyperclip
+import requests
+from bs4 import BeautifulSoup
 from termcolor import colored
 from googlesearch import search
 from anton import PRESET_PROMPTS
@@ -34,7 +36,23 @@ def command_search(command, anton):
   for result in search(query, num_results=5):
     results.append(result)
     print(colored(result, "green", attrs=["bold"]))
-  anton.past_code_snippets.append("```text\n" + "\n".join(results) + "```")
+  anton.past_code_snippets.append(add_code_markers("text", "\n".join(results)))
+
+def command_download_text_from_url(command, anton):
+  anton.get_past_code_snippets()
+  snippet_index = input("snippet url list to download from: ")
+  try:
+    print(anton.past_code_snippets[int(snippet_index)])
+    urls = remove_code_markers(anton.past_code_snippets[int(snippet_index)]).split("\n")
+    for url in urls:
+      page = requests.get(url)
+      soup = BeautifulSoup(page.content, 'html.parser')
+      text = soup.get_text()
+      clean_text = "\n".join([l.strip() for l in text.split("\n") if len(l.strip()) > 8])
+      anton.past_code_snippets.append(add_code_markers("text", "URL: " + url + "\n" + clean_text))
+      print(colored(f"Downloaded {len(clean_text)} chars from {url} successfully!", "green", attrs=["bold"]))
+  except Exception as e:
+    print(colored(f"An error occurred while downloading text: {e}", "red", attrs=["bold"]))
 
 def command_last(command, anton):
   print(anton.last_response)
@@ -198,7 +216,7 @@ def command_update_code_lang(command, anton):
   snippet_index = input("snippet to update: ")
   new_language = input("new language: ")
   new_snippet = anton.past_code_snippets[int(snippet_index)]
-  new_snippet = f"```{new_language}\n" + "\n".join(new_snippet.split("\n")[1:])
+  new_snippet = add_code_markers(new_language, remove_code_markers(new_snippet))
   anton.past_code_snippets[int(snippet_index)] = new_snippet
 
 def command_code(command, anton):
@@ -207,7 +225,7 @@ def command_code(command, anton):
 def command_system(command, anton):
   command = command.replace("$ ", "")
   output = popen(command).read()
-  anton.past_code_snippets.append("```text\n" + output + "```")
+  anton.past_code_snippets.append(add_code_markers("text", output))
   print(output)
 
 def command_help(command, anton):
@@ -223,6 +241,7 @@ commands = {
   "last": (command_last, "Prints the last response from Anton."),
   "past": (command_past_messages, "Prints the past messages to and from Anton."),
   "search": (command_search, "Search google and add the results to code snippets."),
+  "download-text-from-url": (command_download_text_from_url, "Downloads all the textual data from a list of urls in a previous code snippet."),
   "set-focus": (command_set_focus, "Sets the focus mode for Anton."),
   "context": (command_context, "Prints the current context messages anton is using."),
   "set-max-response": (command_set_max_response_tokens, "Sets the maximum number of tokens in an Anton response."),
