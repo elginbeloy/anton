@@ -17,6 +17,7 @@ class CustomLexer(RegexLexer):
   tokens = {
     "root": [
       (r'::code\[\d\]::', Token.CodeElement),
+      (r'::message\[\d\]::', Token.CodeElement),
       (r'[^:]+', Token.Text),
       (r':', Token.Text),
     ],

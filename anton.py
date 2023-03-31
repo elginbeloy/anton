@@ -55,6 +55,16 @@ def replace_code(text, code_snippets):
 
   return re.sub(r'::code\[(\d+)\]::', replace_code_match, text)
 
+def replace_past_message(text, past_messages):
+  def replace_past_message_match(match):
+    index = int(match.group(1))
+    if index < len(past_messages):
+      return past_messages[index]['content']
+    else:
+      return match.group(0)  # If index is out of range, don't replace the match
+
+  return re.sub(r'::message\[(\d+)\]::', replace_past_message_match, text)
+
 # Focus: motivate | inspire | support | pal_around | inform | assist
 class AntonAI:
   def __init__(self, temperature=0.8, model="gpt-3.5-turbo", max_response_tokens=512):
@@ -90,6 +100,7 @@ class AntonAI:
 
   def get_response(self, prompt):
     prompt = replace_code(prompt, self.past_code_snippets)
+    prompt = replace_past_message(prompt, self.past_messages)
     self.past_messages.append({"role": "user", "content": prompt})
     self.current_context_messages.append({"role": "user", "content": prompt})
     response = openai.ChatCompletion.create(

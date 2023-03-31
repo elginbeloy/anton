@@ -39,6 +39,9 @@ def command_search(command, anton):
 def command_last(command, anton):
   print(anton.last_response)
 
+def command_past_messages(command, anton):
+  print(anton.past_messages)
+
 def command_context(command, anton):
   anton.get_current_context()
 
@@ -218,6 +221,7 @@ commands = {
   "get-image": (command_get_image, "Displays a random image from the pics directory."),
   "create-image": (command_create_image, "Creates an image based on the given prompt."),
   "last": (command_last, "Prints the last response from Anton."),
+  "past": (command_past_messages, "Prints the past messages to and from Anton."),
   "search": (command_search, "Search google and add the results to code snippets."),
   "set-focus": (command_set_focus, "Sets the focus mode for Anton."),
   "context": (command_context, "Prints the current context messages anton is using."),
