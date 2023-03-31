@@ -17,17 +17,23 @@ To start the chatbot, run the following command:
 python main.py
 ```
 
-
 You will see a prompt that looks like this:
 
 ```
-[elgin] 
+[you] 
 ```
-
 
 Enter your message and AntonAI will respond with a generated message.
 
 You can also use `> ` to execute commands. Try `> help` for a list.
+
+Set focus (preset prompts) using `> focus`.
+
+See Antons current context window with `> context`. 
+
+Anton contains a code snippet system, view it with `> code` and use 
+in prompts via `::code[n]::` where this string is replaced with the n'th
+previous code snippet.
 
 ## Screenshots
 
