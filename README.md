@@ -29,6 +29,10 @@ Enter your message and AntonAI will respond with a generated message.
 
 You can also use `> ` to execute commands. Try `> help` for a list.
 
+## Screenshots
+
+![Alt text](./screenshot_1.png?raw=true "Screenshot of AntonCLI")
+
 ## License
 
 This project is licensed under the OOOWEEEEWOWWWEEEMAMA license. I will sue you into dust (all jokes). 
