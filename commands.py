@@ -2,6 +2,8 @@ import random
 import climage
 import pyperclip
 from termcolor import colored
+from googlesearch import search
+from anton import PRESET_PROMPTS
 from os import system, listdir, popen
 from utils import show_banner, remove_code_markers, add_code_markers, highlight_code
 from termcolor import colored
@@ -26,6 +28,14 @@ def command_create_image(command, anton):
     return
   print(anton.create_image(prompt, amount))
 
+def command_search(command, anton):
+  query = input("What do you want to search for? ")
+  results = []
+  for result in search(query, num_results=5):
+    results.append(result)
+    print(colored(result, "green", attrs=["bold"]))
+  anton.past_code_snippets.append("```text\n" + "\n".join(results) + "```")
+
 def command_last(command, anton):
   print(anton.last_response)
 
@@ -48,7 +58,7 @@ def command_set_temperature(command, anton):
 
 def command_set_focus(command, anton):
   try:
-    print(colored("motivate | inspire | support | pal_around | inform | assist | add_command", "green", attrs=["bold"]))
+    print(colored(" | ".join(PRESET_PROMPTS.keys()), "green", attrs=["bold"]))
     focus = input("Enter focus mode: ")
     anton.set_focus_mode(focus)
   except ValueError:
@@ -205,7 +215,10 @@ def command_help(command, anton):
 
 commands = {
   "exit": (command_exit, "Exits the program."),
+  "get-image": (command_get_image, "Displays a random image from the pics directory."),
+  "create-image": (command_create_image, "Creates an image based on the given prompt."),
   "last": (command_last, "Prints the last response from Anton."),
+  "search": (command_search, "Search google and add the results to code snippets."),
   "set-focus": (command_set_focus, "Sets the focus mode for Anton."),
   "context": (command_context, "Prints the current context messages anton is using."),
   "set-max-response": (command_set_max_response_tokens, "Sets the maximum number of tokens in an Anton response."),
@@ -220,9 +233,7 @@ commands = {
   "run-code": (command_run_code, "Runs a specific code snippet from the list of past code snippets."),
   "update-code-lang": (command_update_code_lang, "Edits a code snippets language."),
   "code": (command_code, "Prints the list of past code snippets."),
-  "$": (command_system, "Executes a system command."),
-  "get-image": (command_get_image, "Displays a random image from the pics directory."),
-  "create-image": (command_create_image, "Creates an image based on the given prompt."),
+  "system": (command_system, "Executes a system command."),
   "help": (command_help, "Prints a list of available commands and their descriptions.")
 }
 
