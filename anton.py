@@ -45,27 +45,20 @@ PRESET_PROMPTS = {
   ],
 }
 
-def replace_code(text, code_snippets):
-  def replace_code_match(match):
-    index = int(match.group(1))
-    if index < len(code_snippets):
-      return code_snippets[index]
-    else:
-      return match.group(0)  # If index is out of range, don't replace the match
+# Replace code and past messages in the text
+def replace_text(text, code_snippets, past_messages):
+    def replace_match(match):
+        match_type, index = match.group(1), int(match.group(2))
+        if match_type == "code" and index < len(code_snippets):
+            return code_snippets[index]
+        elif match_type == "message" and index < len(past_messages):
+            return past_messages[index]['content']
+        else:
+            return match.group(0)  # If index is out of range, don't replace the match
 
-  return re.sub(r'::code\[(\d+)\]::', replace_code_match, text)
+    return re.sub(r'::(code|message)\[(\d+)\]::', replace_match, text)
 
-def replace_past_message(text, past_messages):
-  def replace_past_message_match(match):
-    index = int(match.group(1))
-    if index < len(past_messages):
-      return past_messages[index]['content']
-    else:
-      return match.group(0)  # If index is out of range, don't replace the match
-
-  return re.sub(r'::message\[(\d+)\]::', replace_past_message_match, text)
-
-# Focus: motivate | inspire | support | pal_around | inform | assist
+# Main AntonAI class for interacting with OpenAI's APIs
 class AntonAI:
   def __init__(self, temperature=0.8, model="gpt-3.5-turbo", max_response_tokens=512):
     self.temperature = temperature
@@ -77,20 +70,24 @@ class AntonAI:
     self.current_focus = ""
     self.last_response = {}
 
+  # Set temperature for generating responses
   def set_temperature(self, temperature):
     temperature = float(temperature)
     if temperature > 1.8:
-      raise ValueError
+      raise ValueError("Temperature must be less than or equal to 1.8.")
     self.temperature = temperature
 
+  # Set maximum tokens for generating responses
   def set_max_response_tokens(self, max_tokens):
     if max_tokens > 2048:
-      raise ValueError
+      raise ValueError("Max tokens must be less than or equal to 2048.")
     self.max_response_tokens = max_tokens
 
+  # Reset the context window
   def reset_context_window(self):
-    self.current_context_messages = PRESET_PROMPTS['default'][:]
+    self.current_context_messages = []
 
+  # Set focus mode
   def set_focus_mode(self, focus):
     if focus in PRESET_PROMPTS:
       self.current_focus = focus
@@ -98,9 +95,9 @@ class AntonAI:
     else:
       raise ValueError(f"Invalid focus mode: {focus}")
 
+  # Get response from OpenAI's API
   def get_response(self, prompt):
-    prompt = replace_code(prompt, self.past_code_snippets)
-    prompt = replace_past_message(prompt, self.past_messages)
+    prompt = replace_text(prompt, self.past_code_snippets, self.past_messages)
     self.past_messages.append({"role": "user", "content": prompt})
     self.current_context_messages.append({"role": "user", "content": prompt})
     response = openai.ChatCompletion.create(
@@ -112,12 +109,11 @@ class AntonAI:
     self.last_response = response
     response_content = response.choices[0].message.content
     self.past_code_snippets.extend(re.findall(r'```.*?```', response_content, flags=re.DOTALL))
-    # for smaller snippets
-    # self.past_code_snippets.extend(re.findall(r"(?<!`)`([^`]+)`(?!`)", response_content))
     self.past_messages.append({"role": "assistant", "content": response_content})
     self.current_context_messages.append({"role": "assistant", "content": response_content})
     return response
 
+  # Display past code snippets
   def get_past_code_snippets(self):
     for index, snippet in enumerate(self.past_code_snippets):
       language = snippet.split("\n")[0].replace("```", "") or "python"
@@ -128,11 +124,13 @@ class AntonAI:
         print(colored(f"{str(line_num + 1).rjust(3)}  ", "white", attrs=["bold"]) + highlighted_line, end="")
       print()
 
+  # Display current context window Anton uses to create responses
   def get_current_context(self):
     for message in self.current_context_messages:
       print(f"{colored(message['role'], 'red')}: {message['content']}")
     print()
 
+  # Create images using OpenAI's API
   def create_image(self, prompt, amount):
     response = openai.Image.create(
       prompt=prompt,
