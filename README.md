@@ -32,6 +32,7 @@ You can also use `> ` to execute commands. Try `> help` for a list.
 ## Screenshots
 
 ![Alt text](./screenshot_1.png?raw=true "Screenshot of AntonCLI")
+![Alt text](./screenshot_2.png?raw=true "Screenshot of AntonCLI adding code to himself.")
 
 ## License
 
