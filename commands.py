@@ -1,17 +1,18 @@
 import random
+from os import listdir, popen, system
+
 import climage
 import pyperclip
 import requests
 from bs4 import BeautifulSoup
-from termcolor import colored
 from googlesearch import search
-from anton import PRESET_PROMPTS
-from os import system, listdir, popen
-from utils import show_banner, remove_code_markers, add_code_markers, highlight_code
 from termcolor import colored
 
+from anton import PRESET_PROMPTS
+from utils import (CodeSnippet, add_code_markers, highlight_code,
+                   remove_code_markers, show_banner)
+
 PICS_DIR = "/home/batch/self_internet/enjoyment/pics/"
-current_file = -1
 commands = {}
 
 def command_exit(command, anton):
@@ -36,7 +37,8 @@ def command_search(command, anton):
   for result in search(query, num_results=5):
     results.append(result)
     print(colored(result, "green", attrs=["bold"]))
-  anton.past_code_snippets.append(add_code_markers("text", "\n".join(results)))
+  search_results_snippet = CodeSnippet(language="text", name="search_results", content="\n".join(results))
+  anton.past_code_snippets.append(search_results_snippet)
 
 def command_download_text_from_url(command, anton):
   anton.get_past_code_snippets()
@@ -50,6 +52,7 @@ def command_download_text_from_url(command, anton):
       text = soup.get_text()
       clean_text = "\n".join([l.strip() for l in text.split("\n") if len(l.strip()) > 8])
       anton.past_code_snippets.append(add_code_markers("text", "URL: " + url + "\n" + clean_text))
+      download_results_snippet = CodeSnippet(language="text", name=f"url_{url}", content="\n".join(results))
       print(colored(f"Downloaded {len(clean_text)} chars from {url} successfully!", "green", attrs=["bold"]))
   except Exception as e:
     print(colored(f"An error occurred while downloading text: {e}", "red", attrs=["bold"]))
@@ -93,7 +96,7 @@ def command_copy_code(command, anton):
   anton.get_past_code_snippets()
   try:
     snippet_index = int(input("snippet to copy: "))
-    pyperclip.copy(remove_code_markers(anton.past_code_snippets[snippet_index]))
+    pyperclip.copy(anton.past_code_snippets[snippet_index]['content'])
     print(colored("Code snippet copied to clipboard!", "green", attrs=["bold"]))
   except ValueError:
     print(colored("Invalid snippet index!", "red", attrs=["bold"]))
@@ -115,7 +118,7 @@ def command_load_directory_code(command, anton):
       try:
         with open(dir_to_search + file_name, "r") as f:
           file_contents = f.read()
-        anton.past_code_snippets.append(add_code_markers(languages[file_extension], file_contents))
+        anton.past_code_snippets.append(CodeSnippet(languages[file_extension], file_name, file_contents))
         print(colored(f"Loaded {file_name} successfully!", "green", attrs=["bold"]))
       except FileNotFoundError:
         print(colored(f"File {file_name} not found!", "red", attrs=["bold"]))
@@ -167,7 +170,7 @@ def command_load_code(command, anton):
   else:
     start, end = 0, len(file_contents)
   file_contents = "".join(file_contents[start:end])
-  anton.past_code_snippets.append(add_code_markers(language, file_contents))
+  anton.past_code_snippets.append(CodeSnippet(language, file_name, file_contents))
 
 def command_save_code(command, anton):
   anton.get_past_code_snippets()
@@ -188,25 +191,26 @@ def command_edit_code(command, anton):
   anton.get_past_code_snippets()
   snippet_index = input("snippet to edit: ")
   with open("temp_snippet.txt", "w") as f:
-      f.write(remove_code_markers(anton.past_code_snippets[int(snippet_index)]))
+      f.write(anton.past_code_snippets[int(snippet_index)]['content'])
   system("nano temp_snippet.txt")
   with open("temp_snippet.txt", "r") as f:
-      edited_snippet = f.read()
-  language = anton.past_code_snippets[int(snippet_index)].split("\n", 1)[0].strip("`")
-  anton.past_code_snippets[int(snippet_index)] = add_code_markers(language, edited_snippet)
+      updated_snippet_content = f.read()
+  anton.past_code_snippets[int(snippet_index)]['content'] = updated_snippet_content
   system("rm -rf temp_snippet.txt")
 
 def command_run_code(command, anton):
   anton.get_past_code_snippets()
   snippet_index = input("snippet to run: ")
-  language = anton.past_code_snippets[int(snippet_index)].split("\n", 1)[0].strip("`")
+  snippet = anton.past_code_snippets[int(snippet_index)]
+  language = snippet.language
+  content = snippet.content
   if language == "python":
     with open("temp_snippet.py", "w") as f:
-      f.write(remove_code_markers(anton.past_code_snippets[int(snippet_index)]))
+      f.write(content)
     system("python3 temp_snippet.py && rm -rf temp_snippet.py")
   elif language == "bash":
     with open("temp_snippet.sh", "w") as f:
-      f.write(remove_code_markers(anton.past_code_snippets[int(snippet_index)]))
+      f.write(content)
     system("bash temp_snippet.sh && rm -rf temp_snippet.sh")
   else:
     print(colored(f"Language {language} not supported for running code snippets!", "red", attrs=["bold"]))
@@ -216,8 +220,7 @@ def command_update_code_lang(command, anton):
   snippet_index = input("snippet to update: ")
   new_language = input("new language: ")
   new_snippet = anton.past_code_snippets[int(snippet_index)]
-  new_snippet = add_code_markers(new_language, remove_code_markers(new_snippet))
-  anton.past_code_snippets[int(snippet_index)] = new_snippet
+  new_snippet.language = new_language
 
 def command_code(command, anton):
   anton.get_past_code_snippets()
@@ -225,7 +228,8 @@ def command_code(command, anton):
 def command_system(command, anton):
   command = command.replace("$ ", "")
   output = popen(command).read()
-  anton.past_code_snippets.append(add_code_markers("text", output))
+  code_snippet = CodeSnippet(language="text", name="system output", content=output)
+  anton.past_code_snippets.append(code_snippet)
   print(output)
 
 def command_help(command, anton):

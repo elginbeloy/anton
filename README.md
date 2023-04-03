@@ -40,6 +40,11 @@ previous code snippet.
 ![Alt text](./screenshot_1.png?raw=true "Screenshot of AntonCLI")
 ![Alt text](./screenshot_2.png?raw=true "Screenshot of AntonCLI adding code to himself.")
 
-## License
+## Todos
 
-This project is licensed under the OOOWEEEEWOWWWEEEMAMA license. I will sue you into dust (all jokes). 
+[ ] Code snippets as a class instead of just strings
+[ ] Data snippets as a class instead of code snippets
+-> [ ] Data snippets using their own commands and ::data[n]::
+[ ] Locally stored .history file for storing permanant history
+[ ] Context window editing
+[ ] Session / context window storage of some sort ??? 

@@ -1,7 +1,12 @@
 import openai
 import re
 from termcolor import colored
-from utils import highlight_code
+from utils import (
+    CodeSnippet,
+    highlight_code,
+    get_code_language,
+    remove_code_markers,
+    add_code_markers)
 from os import getenv
 from dotenv import load_dotenv
 load_dotenv()
@@ -57,16 +62,16 @@ PRESET_PROMPTS = {
 
 # Replace code and past messages in the text
 def replace_text(text, code_snippets, past_messages):
-    def replace_match(match):
-        match_type, index = match.group(1), int(match.group(2))
-        if match_type == "code" and index < len(code_snippets):
-            return code_snippets[index]
-        elif match_type == "message" and index < len(past_messages):
-            return past_messages[index]['content']
-        else:
-            return match.group(0)  # If index is out of range, don't replace the match
+  def replace_match(match):
+    match_type, index = match.group(1), int(match.group(2))
+    if match_type == "code" and index < len(code_snippets):
+        return code_snippets[index].content
+    elif match_type == "message" and index < len(past_messages):
+        return past_messages[index]['content']
+    else:
+        return match.group(0)  # If index is out of range, don't replace the match
 
-    return re.sub(r'::(code|message)\[(\d+)\]::', replace_match, text)
+  return re.sub(r'::(code|message)\[(\d+)\]::', replace_match, text)
 
 # Main AntonAI class for interacting with OpenAI's APIs
 class AntonAI:
@@ -118,7 +123,15 @@ class AntonAI:
     )
     self.last_response = response
     response_content = response.choices[0].message.content
-    self.past_code_snippets.extend(re.findall(r'```.*?```', response_content, flags=re.DOTALL))
+
+    # Extract code snippets, convert to CodeSnippet, and append to list
+    code_snippet_strs = re.findall(r'```.*?```', response_content, flags=re.DOTALL)
+    for code_snippet_str in code_snippet_strs:
+      language = get_code_language(code_snippet_str)
+      content = remove_code_markers(code_snippet_str)
+      code_snippet = CodeSnippet(language, "antons code", content)
+      self.past_code_snippets.append(code_snippet)
+
     self.past_messages.append({"role": "assistant", "content": response_content})
     self.current_context_messages.append({"role": "assistant", "content": response_content})
     return response
@@ -126,12 +139,23 @@ class AntonAI:
   # Display past code snippets
   def get_past_code_snippets(self):
     for index, snippet in enumerate(self.past_code_snippets):
-      language = snippet.split("\n")[0].replace("```", "") or "python"
-      snippet_lines = snippet.replace("`", "").split("\n")[:-1]
-      print(f"[{index}] {colored(snippet_lines[0], 'yellow')}")
-      for line_num, line in enumerate(snippet_lines[1:]):
-        highlighted_line = highlight_code(line, language)
-        print(colored(f"{str(line_num + 1).rjust(3)}  ", "white", attrs=["bold"]) + highlighted_line, end="")
+      name = snippet.name
+      language = snippet.language
+      snippet_lines = snippet.content.split("\n")
+      print(f"[{index}] {colored(name, 'cyan', attrs=['bold'])} {colored(language, 'yellow')}")
+      if len(snippet_lines) <= 10:
+        for line_num, line in enumerate(snippet_lines):
+          highlighted_line = highlight_code(line, language)
+          print(colored(f"{str(line_num + 1).rjust(3)}  ", "white", attrs=["bold"]) + highlighted_line, end="")
+      else:
+        for line_num, line in enumerate(snippet_lines[:5]):
+          highlighted_line = highlight_code(line, language)
+          print(colored(f"{str(line_num + 1).rjust(3)}  ", "white", attrs=["bold"]) + highlighted_line, end="")
+        print(colored("...", "yellow", attrs=["bold"]))
+        for line_num, line in enumerate(snippet_lines[-5:]):
+          highlighted_line = highlight_code(line, language)
+          print(colored(f"{str((len(snippet_lines) - 5) + line_num).rjust(3)}  ", "white", attrs=["bold"]) + highlighted_line, end="")
+     
       print()
 
   # Display current context window Anton uses to create responses

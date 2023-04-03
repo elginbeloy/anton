@@ -65,13 +65,18 @@ def highlight_code(code, language):
   return highlighted_code
 
 
+class CodeSnippet:
+  def __init__(self, language, name, content):
+    self.language = language
+    self.name = name
+    self.content = content
+
 def get_code_language(code):
   match = re.match(r"^```(\w+)\n", code)
   if match:
     return match.group(1)
   else:
     return 'python'
-
 
 def remove_code_markers(snippet):
   lines = snippet.split("\n")
