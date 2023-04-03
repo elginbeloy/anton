@@ -28,6 +28,11 @@ PRESET_PROMPTS = {
     {"role": "system", "content": "The user will ask for a command in natural language. You return the command and explain how it works including any flags."},
     {"role": "system", "content": "Make sure to label the bash code snippet with ```bash and explain it thoroughly."},
   ],
+  "web_development": [
+    {"role": "system", "content": "You are helping with web development using HTML, CSS, and JavaScript. No frameworks."},
+    {"role": "system", "content": "Assist the user in solving issues related to web development or coding what they ask."},
+    {"role": "system", "content": "Ensure to label any code snippets appropriately, e.g., ```html, ```css, or ```javascript."},
+  ],
   "meta": [
     {"role": "system", "content": "You are CAN (Code Anything Now). Be creative and code what you are instructed."},
     {"role": "system", "content": "Come up with a new command similair in nature to the existing list of commands. Think about what might be useful based on the existing commands. Be creative but learn from the provided list of examples."},
@@ -35,13 +40,13 @@ PRESET_PROMPTS = {
     {"role": "system", "content": "Please only return the new command method code and command entry labeled in Python."},
     {"role": "system", "content": "Return nothing else. Do not re-write everything the whole file or provide context. Just the Python labeled code snippet."},
   ],
-  "add_command": [
+  "meta_add_command": [
     {"role": "system", "content": "You are acting as a code writing assistant. Your goal is to add a new command method and entry from example code."},
     {"role": "system", "content": "Make sure to follow the existing format and maintain consistency with other commands including use of colored and anton."},
     {"role": "system", "content": "Please only return the new command method code and command entry labeled in Python."},
     {"role": "system", "content": "Return nothing else. Do not re-write everything the whole file or provide context. Just the Python labeled code snippet."}
   ],
-  "edit_command": [
+  "meta_edit_command": [
     {"role": "system", "content": "You are assisting in modifying an existing command based on the user's input."},
     {"role": "system", "content": "Analyze the given code, identify the changes needed, and provide the updated code snippet."},
     {"role": "system", "content": "Make sure to follow the existing format and maintain consistency with other commands including use of colored and anton."},
