@@ -96,7 +96,7 @@ def command_copy_code(command, anton):
   anton.get_past_code_snippets()
   try:
     snippet_index = int(input("snippet to copy: "))
-    pyperclip.copy(anton.past_code_snippets[snippet_index]['content'])
+    pyperclip.copy(anton.past_code_snippets[snippet_index].content)
     print(colored("Code snippet copied to clipboard!", "green", attrs=["bold"]))
   except ValueError:
     print(colored("Invalid snippet index!", "red", attrs=["bold"]))
@@ -191,11 +191,11 @@ def command_edit_code(command, anton):
   anton.get_past_code_snippets()
   snippet_index = input("snippet to edit: ")
   with open("temp_snippet.txt", "w") as f:
-      f.write(anton.past_code_snippets[int(snippet_index)]['content'])
+      f.write(anton.past_code_snippets[int(snippet_index)].content)
   system("nano temp_snippet.txt")
   with open("temp_snippet.txt", "r") as f:
       updated_snippet_content = f.read()
-  anton.past_code_snippets[int(snippet_index)]['content'] = updated_snippet_content
+  anton.past_code_snippets[int(snippet_index)].content = updated_snippet_content
   system("rm -rf temp_snippet.txt")
 
 def command_run_code(command, anton):

@@ -142,7 +142,7 @@ class AntonAI:
       name = snippet.name
       language = snippet.language
       snippet_lines = snippet.content.split("\n")
-      print(f"[{index}] {colored(name, 'cyan', attrs=['bold'])} {colored(language, 'yellow')}")
+      print(f"|{colored(' ' + str(index) + ' ', 'green', attrs=['bold', 'reverse'])}| {colored(name, 'cyan', attrs=['bold', 'reverse'])} | {colored(language, 'yellow')} |")
       if len(snippet_lines) <= 10:
         for line_num, line in enumerate(snippet_lines):
           highlighted_line = highlight_code(line, language)
