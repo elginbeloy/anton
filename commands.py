@@ -1,7 +1,6 @@
 import random
 from os import listdir, popen, system
 
-import climage
 import pyperclip
 import requests
 from bs4 import BeautifulSoup
@@ -13,9 +12,10 @@ from utils import (CodeSnippet, DataSnippet,
   add_code_markers, highlight_code,
   remove_code_markers, show_banner)
 
-PICS_DIR = "/home/batch/self_internet/enjoyment/pics/"
 commands = {}
 
+# General CLI commands
+# =====================================
 def command_exit(command, anton):
   exit()
 
@@ -28,6 +28,8 @@ def command_help(command, anton):
 def command_clear(command, anton):
   show_banner()
 
+# Anton LLM Commands
+# =====================================
 def command_last_message(command, anton):
   print(anton.last_response)
 
@@ -62,6 +64,8 @@ def command_set_temperature(command, anton):
   except ValueError:
     print(colored("Invalid temperature amount!", "red", attrs=["bold"]))
 
+# DataSnippet Related Commands
+# =====================================
 def command_list_data(command, anton):
   anton.get_past_data_snippets()
 
@@ -73,7 +77,6 @@ def command_copy_data(command, anton):
     print(colored("Data snippet copied to clipboard!", "green", attrs=["bold"]))
   except ValueError:
     print(colored("Invalid snippet index!", "red", attrs=["bold"]))
-
 
 def command_load_data(command, anton):
   def print_file_contents(file_contents, start=0, end=None):
@@ -121,7 +124,6 @@ def command_load_data(command, anton):
     start, end = 0, len(file_contents)
   file_contents = "".join(file_contents[start:end])
   anton.past_data_snippets.append(DataSnippet(data_type, file_name, file_contents))
-
 
 def command_load_directory_data(command, anton):
   dir_to_search = input("directory to load: ")
@@ -195,7 +197,6 @@ def command_update_data_type(command, anton):
   except IndexError:
     print(colored("Snippet index out of range!", "red", attrs=["bold"]))
 
-
 def command_search(command, anton):
   query = input("What do you want to search for? ")
   results = []
@@ -222,6 +223,8 @@ def command_download_text_from_url(command, anton):
   except Exception as e:
     print(colored(f"An error occurred while downloading text: {e}", "red", attrs=["bold"]))
 
+# CodeSnippet Related Commands
+# =====================================
 def command_copy_code(command, anton):
   anton.get_past_code_snippets()
   try:
@@ -309,7 +312,7 @@ def command_save_code(command, anton):
   snippet_name = input("filename (w/ extension): ")
   try:
     with open(snippet_name, "w") as f:
-      f.write(remove_code_markers(anton.past_code_snippets[int(snippet_index)]))
+      f.write(anton.past_code_snippets[int(snippet_index)].content)
   except Exception as e:
     print(colored(f"An error occurred while saving the file: {e}", "red", attrs=["bold"]))
 
@@ -363,11 +366,8 @@ def command_update_code_name(command, anton):
 def command_list_code(command, anton):
   anton.get_past_code_snippets()
 
-def command_get_image(command, anton):
-  files = listdir(PICS_DIR)
-  random.shuffle(files)
-  print(climage.convert(PICS_DIR + files[0], is_unicode=True))
-
+# Misc (idk how to categorize these) Commands
+# =====================================
 def command_create_image(command, anton):
   prompt = input("image to create: ")
   amount = int(input("# of images: "))
@@ -377,10 +377,10 @@ def command_create_image(command, anton):
   print(anton.create_image(prompt, amount))
 
 def command_system(command, anton):
-  command = command.replace("system ", "")
+  command = input(colored("$ ", "green", attrs=["bold"]))
   output = popen(command).read()
-  code_snippet = CodeSnippet(language="text", name="system output", content=output)
-  anton.past_code_snippets.append(code_snippet)
+  code_snippet = DataSnippet(data_type="text", name="system_output", content=output)
+  anton.past_data_snippets.append(code_snippet)
   print(output)
 
 commands = {
@@ -393,7 +393,7 @@ commands = {
   "past": (command_past_messages, "Prints the past messages to and from Anton."),
   "set-focus": (command_set_focus, "Sets the focus mode for Anton."),
   #"create-focus": (command_create_focus, "Create a new focus mode for Anton using the current context window for preset prompts."),
-  "get-context": (command_get_context, "Prints the current context messages anton is using."),
+  "context": (command_get_context, "Prints the current context messages anton is using."),
   "clear-context": (command_clear_context, "Resets the current context window."),
   #"create-context-window": (command_clear, "Resets the current context window."),
   #"list-context-windows": (command_clear, "Resets the current context window."),
@@ -404,7 +404,7 @@ commands = {
   "set-temperature": (command_set_temperature, "Sets the temperature for generating Anton's responses."),
 
   # Data related commands
-  "list-data": (command_list_data, "Prints the list of past data snippets."),
+  "data": (command_list_data, "Prints the list of past data snippets."),
   "copy-data": (command_copy_data, "Copies a data snippet from the list of past code snippets to the clipboard."),
   "load-data": (command_load_data, "Loads a data snippet from a file and adds it to the list of past code snippets."),
   "load-dirdata": (command_load_directory_data, "Loads a list of code snippets from all code files in a directory."),
@@ -417,7 +417,7 @@ commands = {
   "download-text-from-url": (command_download_text_from_url, "Downloads all the textual data from a list of urls in a previous code snippet."),
 
   # Code related commands
-  "list-code": (command_list_code, "Prints the list of past code snippets."),
+  "code": (command_list_code, "Prints the list of past code snippets."),
   "copy-code": (command_copy_code, "Copies a code snippet from the list of past code snippets to the clipboard."),
   "load-code": (command_load_code, "Loads a code snippet from a file and adds it to the list of past code snippets."),
   "load-dircode": (command_load_directory_code, "Loads a list of code snippets from all code files in a directory."),
@@ -429,7 +429,6 @@ commands = {
   "update-code-lang": (command_update_code_lang, "Edits a code snippets language."),
 
   # Other MISC commands
-  "get-image": (command_get_image, "Displays a random image from the pics directory."),
   "create-image": (command_create_image, "Creates an image based on the given prompt."),
   "system": (command_system, "Executes a system command."),
 }

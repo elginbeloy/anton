@@ -43,8 +43,13 @@ previous code snippet.
 ## Todos
 
 [ ] Code snippets as a class instead of just strings
+
 [ ] Data snippets as a class instead of code snippets
+
 -> [ ] Data snippets using their own commands and ::data[n]::
+
 [ ] Locally stored .history file for storing permanant history
+
 [ ] Context window editing
+
 [ ] Session / context window storage of some sort ??? 
