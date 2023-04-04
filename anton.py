@@ -61,17 +61,19 @@ PRESET_PROMPTS = {
 }
 
 # Replace code and past messages in the text
-def replace_text(text, code_snippets, past_messages):
+def replace_text(text, code_snippets, data_snippets, past_messages):
   def replace_match(match):
     match_type, index = match.group(1), int(match.group(2))
     if match_type == "code" and index < len(code_snippets):
         return code_snippets[index].content
+    if match_type == "data" and index < len(data_snippets):
+        return data_snippets[index].content
     elif match_type == "message" and index < len(past_messages):
         return past_messages[index]['content']
     else:
         return match.group(0)  # If index is out of range, don't replace the match
 
-  return re.sub(r'::(code|message)\[(\d+)\]::', replace_match, text)
+  return re.sub(r'::(code|message|data)\[(\d+)\]::', replace_match, text)
 
 # Main AntonAI class for interacting with OpenAI's APIs
 class AntonAI:
@@ -81,6 +83,7 @@ class AntonAI:
     self.max_response_tokens = max_response_tokens
     self.past_messages = PRESET_PROMPTS['default'][:]
     self.past_code_snippets = []
+    self.past_data_snippets = []
     self.current_context_messages = PRESET_PROMPTS['default'][:]
     self.current_focus = ""
     self.last_response = {}
@@ -112,7 +115,7 @@ class AntonAI:
 
   # Get response from OpenAI's API
   def get_response(self, prompt):
-    prompt = replace_text(prompt, self.past_code_snippets, self.past_messages)
+    prompt = replace_text(prompt, self.past_code_snippets, self.past_data_snippets, self.past_messages)
     self.past_messages.append({"role": "user", "content": prompt})
     self.current_context_messages.append({"role": "user", "content": prompt})
     response = openai.ChatCompletion.create(
@@ -138,6 +141,7 @@ class AntonAI:
 
   # Display past code snippets
   def get_past_code_snippets(self):
+    print()
     for index, snippet in enumerate(self.past_code_snippets):
       name = snippet.name
       language = snippet.language
@@ -151,10 +155,34 @@ class AntonAI:
         for line_num, line in enumerate(snippet_lines[:5]):
           highlighted_line = highlight_code(line, language)
           print(colored(f"{str(line_num + 1).rjust(3)}  ", "white", attrs=["bold"]) + highlighted_line, end="")
-        print(colored("...", "yellow", attrs=["bold"]))
+        print()
+        print(colored("     ...more lines...", "yellow", attrs=["bold"]))
+        print()
         for line_num, line in enumerate(snippet_lines[-5:]):
           highlighted_line = highlight_code(line, language)
           print(colored(f"{str((len(snippet_lines) - 5) + line_num).rjust(3)}  ", "white", attrs=["bold"]) + highlighted_line, end="")
+     
+      print()
+
+    # Display past code snippets
+  def get_past_data_snippets(self):
+    print()
+    for index, snippet in enumerate(self.past_data_snippets):
+      name = snippet.name
+      data_type = snippet.data_type
+      snippet_lines = snippet.content.split("\n")
+      print(f"|{colored(' ' + str(index) + ' ', 'green', attrs=['bold', 'reverse'])}| {colored(name, 'cyan', attrs=['bold', 'reverse'])} | {colored(data_type, 'yellow')} |")
+      if len(snippet_lines) <= 10:
+        for line_num, line in enumerate(snippet_lines):
+          print(colored(f"{str(line_num + 1).rjust(3)}  ", "white", attrs=["bold"]) + line, end="")
+      else:
+        for line_num, line in enumerate(snippet_lines[:5]):
+          print(colored(f"{str(line_num + 1).rjust(3)}  ", "white", attrs=["bold"]) + line, end="")
+        print()
+        print(colored("     ...more lines...", "yellow", attrs=["bold"]))
+        print()
+        for line_num, line in enumerate(snippet_lines[-5:]):
+          print(colored(f"{str((len(snippet_lines) - 5) + line_num).rjust(3)}  ", "white", attrs=["bold"]) + line, end="")
      
       print()
 

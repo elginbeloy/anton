@@ -38,13 +38,6 @@ def highlight_code(code, language):
     highlighted_code = highlighted_code.replace("True", colored("True", "magenta"))
     highlighted_code = highlighted_code.replace("False", colored("False", "red"))
     highlighted_code = highlighted_code.replace("None", colored("None", "yellow"))
-    # TODO figure out why/how highlight(code, lexer, formatter) fucks up the below matching
-    #highlighted_code = re.sub(r' range\(', colored("range", "cyan"), highlighted_code)
-    #highlighted_code = re.sub(r'print', colored("print", "cyan"), highlighted_code)
-    #highlighted_code = re.sub(r'\blen\(', colored("len", "cyan"), highlighted_code)
-    #highlighted_code = re.sub(r'[^a-zA-Z-_]input\(', colored("input", "cyan"), highlighted_code)
-    #highlighted_code = re.sub(r'\bint\(', colored("int", "cyan"), highlighted_code)
-    #highlighted_code = re.sub(r'\bstr\(', colored("str", "cyan"), highlighted_code)
     highlighted_code = highlighted_code.replace("(", colored("(", "yellow"))
     highlighted_code = highlighted_code.replace(")", colored(")", "yellow"))
     highlighted_code = highlighted_code.replace("{", colored("{", "yellow"))
@@ -64,6 +57,11 @@ def highlight_code(code, language):
     highlighted_code = highlight(code, lexer, formatter)
   return highlighted_code
 
+class DataSnippet:
+  def __init__(self, data_type, name, content):
+    self.data_type = data_type
+    self.name = name
+    self.content = content
 
 class CodeSnippet:
   def __init__(self, language, name, content):
