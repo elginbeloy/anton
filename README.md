@@ -2,7 +2,7 @@
 
 anton is a powerful CLI chatbot assistant that utilizes an LLM, code + data snippets, its own REPL and reference syntax, preset prompts, and context window editing to assist users in their various workflows. 
 
-Anton contains a code and data snippet system that can be viewed with `> code` and `> data`. These code snippets can be used in prompts via `::code[n]::` and `::data[n]``, where the string is replaced with the n'th snippet. The same can be done with past messages via the string `::message[0]::`.
+Anton contains a code and data snippet system that can be viewed with `> code` and `> data`. These code snippets can be used in prompts via `::code[n]::` and `::data[n]`, where the string is replaced with the n'th snippet. The same can be done with past messages via the string `::message[0]::`.
 
 Some example use cases include
 - use natural language to create, edit, summarize, or review code
