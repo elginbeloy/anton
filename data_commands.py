@@ -92,8 +92,9 @@ def command_load_data(command, anton):
 
 def command_load_directory_data(command, anton):
   dir_to_search = input("directory to load: ")
+  extension_to_load = input("extension to load (dont include period)")
   try:
-    files = listdir(dir_to_search)
+    files = [f for f in listdir(dir_to_search) if f.endswith(extension_to_load)]
   except FileNotFoundError:
     print(colored(f"Directory {dir_to_search} not found!", "red", attrs=["bold"]))
     return
@@ -104,8 +105,7 @@ def command_load_directory_data(command, anton):
     try:
       with open(dir_to_search + file_name, "r") as f:
         file_contents = f.read()
-      data_type = input(f"Enter data type for file {file_name}: ")
-      anton.past_data_snippets.append(DataSnippet(data_type, file_name, file_contents))
+      anton.past_data_snippets.append(DataSnippet(extension_to_load, file_name, file_contents))
       print(colored(f"Loaded {file_name} successfully!", "green", attrs=["bold"]))
     except FileNotFoundError:
       print(colored(f"File {file_name} not found!", "red", attrs=["bold"]))
@@ -168,22 +168,22 @@ def command_search(command, anton):
   for result in search(query, num_results=5):
     results.append(result)
     print(colored(result, "green", attrs=["bold"]))
-  search_results_snippet = CodeSnippet(language="text", name="search_results", content="\n".join(results))
-  anton.past_code_snippets.append(search_results_snippet)
+  search_results_snippet = DataSnippet(data_type="text", name="search_results", content="\n".join(results))
+  anton.past_data_snippets.append(search_results_snippet)
 
 def command_download_text_from_url(command, anton):
-  anton.get_past_code_snippets()
+  anton.get_past_data_snippets()
   snippet_index = input("snippet url list to download from: ")
   try:
-    print(anton.past_code_snippets[int(snippet_index)])
-    urls = remove_code_markers(anton.past_code_snippets[int(snippet_index)]).split("\n")
+    print(anton.past_data_snippets[int(snippet_index)])
+    urls = anton.past_data_snippets[int(snippet_index)].content.split("\n")
     for url in urls:
       page = requests.get(url)
       soup = BeautifulSoup(page.content, 'html.parser')
       text = soup.get_text()
       clean_text = "\n".join([l.strip() for l in text.split("\n") if len(l.strip()) > 8])
       download_results_snippet = DataSnippet(data_type="text", name=f"url_{url}", content=clean_text)
-      anton.past_code_snippets.append(download_results_snippet)
+      anton.past_data_snippets.append(download_results_snippet)
       print(colored(f"Downloaded {len(clean_text)} chars from {url} successfully!", "green", attrs=["bold"]))
   except Exception as e:
     print(colored(f"An error occurred while downloading text: {e}", "red", attrs=["bold"]))

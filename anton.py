@@ -147,7 +147,7 @@ class AntonAI:
       language = snippet.language
       snippet_lines = snippet.content.split("\n")
       print(f"|{colored(' ' + str(index) + ' ', 'green', attrs=['bold', 'reverse'])}| {colored(name, 'cyan', attrs=['bold', 'reverse'])} | {colored(language, 'yellow')} |")
-      if len(snippet_lines) <= 10:
+      if len(snippet_lines) <= 11:
         for line_num, line in enumerate(snippet_lines):
           highlighted_line = highlight_code(line, language)
           print(colored(f"{str(line_num + 1).rjust(3)}  ", "white", attrs=["bold"]) + highlighted_line, end="")
@@ -160,7 +160,7 @@ class AntonAI:
         print()
         for line_num, line in enumerate(snippet_lines[-5:]):
           highlighted_line = highlight_code(line, language)
-          print(colored(f"{str((len(snippet_lines) - 5) + line_num).rjust(3)}  ", "white", attrs=["bold"]) + highlighted_line, end="")
+          print(colored(f"{str((len(snippet_lines) - 4) + line_num).rjust(3)}  ", "white", attrs=["bold"]) + highlighted_line, end="")
      
       print()
 
@@ -172,7 +172,7 @@ class AntonAI:
       data_type = snippet.data_type
       snippet_lines = snippet.content.split("\n")
       print(f"|{colored(' ' + str(index) + ' ', 'green', attrs=['bold', 'reverse'])}| {colored(name, 'cyan', attrs=['bold', 'reverse'])} | {colored(data_type, 'yellow')} |")
-      if len(snippet_lines) <= 10:
+      if len(snippet_lines) <= 11:
         for line_num, line in enumerate(snippet_lines):
           print(colored(f"{str(line_num + 1).rjust(3)}  ", "white", attrs=["bold"]) + line)
       else:
@@ -182,7 +182,7 @@ class AntonAI:
         print(colored("     ...more lines...", "yellow", attrs=["bold"]))
         print()
         for line_num, line in enumerate(snippet_lines[-5:]):
-          print(colored(f"{str((len(snippet_lines) - 5) + line_num).rjust(3)}  ", "white", attrs=["bold"]) + line)
+          print(colored(f"{str((len(snippet_lines) - 4) + line_num).rjust(3)}  ", "white", attrs=["bold"]) + line)
      
       print()
 
