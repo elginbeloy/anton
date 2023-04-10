@@ -105,15 +105,16 @@ commands = {
 
   # Data related commands
   "data": (command_list_data, "Prints the list of past data snippets."),
-  "copy-data": (command_copy_data, "Copies a data snippet from the list of past code snippets to the clipboard."),
+  "copy-data": (command_copy_data, "Copies a data snippet from the list of past data snippets to the clipboard."),
   "load-data": (command_load_data, "Loads a data snippet from a file and adds it to the list of past code snippets."),
-  "load-dirdata": (command_load_directory_data, "Loads a list of code snippets from all code files in a directory."),
-  "save-data": (command_save_data, "Saves a code snippet from the list of past code snippets to a file."),
-  "remove-data": (command_remove_data, "Removes a code snippet from the list of past code snippets."),
-  "edit-data": (command_edit_data, "Edits a code snippet from the list of past code snippets."),
-  "update-data-name": (command_update_data_name, "Edits a code snippets name."),
-  "update-data-type": (command_update_data_type, "Edits a code snippets language."),
-  "search": (command_search, "Search google and add the results to code snippets."),
+  "load-dirdata": (command_load_directory_data, "Loads a list of code snippets from all data files in a directory."),
+  "save-data": (command_save_data, "Saves a code snippet from the list of past data snippets to a file."),
+  "remove-data": (command_remove_data, "Removes a code snippet from the list of past data snippets."),
+  "edit-data": (command_edit_data, "Edits a code snippet from the list of past data snippets."),
+  "split-data": (command_split_data, "Splits a data snippet into a subset snippet using start:end line numbers."),
+  "update-data-name": (command_update_data_name, "Edits a data snippets name."),
+  "update-data-type": (command_update_data_type, "Edits a data snippets language."),
+  "search": (command_search, "Search google and add the results to dawta snippets."),
   "download-text-from-url": (command_download_text_from_url, "Downloads all the textual data from a list of urls in a previous code snippet."),
 
   # Code related commands
@@ -124,7 +125,7 @@ commands = {
   "save-code": (command_save_code, "Saves a code snippet from the list of past code snippets to a file."),
   "remove-code": (command_remove_code, "Removes a code snippet from the list of past code snippets."),
   "edit-code": (command_edit_code, "Edits a code snippet from the list of past code snippets."),
-  "split-code": (command_split_code, "Shortens a code snippet by splitting it n:m and returned the substring."),
+  "split-code": (command_split_code, "Shortens a code snippet by splitting it using start:end line numbers."),
   "run-code": (command_run_code, "Runs a specific code snippet from the list of past code snippets."),
   "update-code-name": (command_update_code_name, "Edits a code snippets name."),
   "update-code-lang": (command_update_code_language, "Edits a code snippets language."),

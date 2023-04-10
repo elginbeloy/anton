@@ -67,7 +67,8 @@ def command_load_directory_code(command, anton):
 def command_split_code(command, anton):
   def print_selected_file_contents(file_contents, language, start=-1, end=-1):
     for line_num, line in enumerate(file_contents.splitlines()):
-      if line == None: break
+      if line == None: 
+        break
       color = "red" if start <= line_num < end else "white"
       highlighted_line = highlight_code(line, language)
       print(colored(f"{str(line_num).rjust(3)}  ", color, attrs=["bold"]), end="")

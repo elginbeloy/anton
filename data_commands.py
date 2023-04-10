@@ -24,71 +24,62 @@ def command_copy_data(command, anton):
   except ValueError:
     print(colored("Invalid snippet index!", "red", attrs=["bold"]))
 
-def command_split_existing_data(command, anton):
-  def print_file_contents(file_contents, start=0, end=None):
-    if end is None:
-      end = len(file_contents)
-    for line_num, line in enumerate(file_contents):
-      color = "red" if start <= line_num < end else "white"
-      print(colored(f"{str(line_num).rjust(3)}  ", color, attrs=["bold"]) + line, end="")
-
-  anton.get_past_data_snippets()
-  try:
-    snippet_index = int(input("snippet to split: "))
-    split_index = int(input("split index: "))
-    snippet = anton.past_data_snippets[snippet_index]
-    snippet.content = snippet.content[:split_index]
-    anton.past_data_snippets.append(DataSnippet(snippet.data_type, snippet.file_name, snippet.content[split_index:]))
-    print(colored("Data snippet split successfully!", "green", attrs=["bold"]))
-  except ValueError:
-    print(colored("Invalid snippet index!", "red", attrs=["bold"]))
-
+# Load data from a file
 def command_load_data(command, anton):
-  def print_file_contents(file_contents, start=0, end=None):
-    if end is None:
-      end = len(file_contents)
-    for line_num, line in enumerate(file_contents):
-      color = "red" if start <= line_num < end else "white"
-      print(colored(f"{str(line_num).rjust(3)}  ", color, attrs=["bold"]) + line, end="")
-
-  file_name = input("file path (relative or absolute): ")
-  data_type = input("data type: ")
-  try:
-    with open(file_name, "r") as f:
-      file_contents = f.readlines()
-  except FileNotFoundError:
-    print("File not found. Please check the file path and try again.")
-    return
-  except Exception as e:
-    print(f"An error occurred while reading the file: {e}")
-    return
-  print_file_contents(file_contents)
-  print()
-  lines = input(f"lines to include [0:{len(file_contents)}, default all]: ")
-  if lines:
+    file_name = input("file path (relative or absolute): ")
+    data_type = input("data type: ")
+    
     try:
-      start, end = map(int, lines.split(":"))
-      while True:
-        print_file_contents(file_contents, start, end)
-        confirm = input("Are you sure? (y/n): ")
-        if confirm.lower() == "y":
-          break
-        else:
-          lines = input(f"lines to include [0:{len(file_contents)}, default all]: ")
-          if not lines:
-            start, end = 0, len(file_contents)
-            break
-          start, end = map(int, lines.split(":"))
-    except ValueError:
-      print("Invalid input. Please enter the lines to include in the format 'start:end'.")
-      return
+        with open(file_name, "r") as f:
+            file_contents = f.read()
+    except FileNotFoundError:
+        print("File not found. Please check the file path and try again.")
+        return
     except Exception as e:
-      print(f"An error occurred while processing your input: {e}")
-      return
+        print(f"An error occurred while reading the file: {e}")
+        return
+    
+    anton.past_data_snippets.append(DataSnippet(data_type, file_name, file_contents))
+
+# Split a code snippet into a sub-snippet using line numbers
+def command_split_data(command, anton):
+  def print_selected_file_contents(file_contents, start=-1, end=-1):
+    for line_num, line in enumerate(file_contents.splitlines()):
+      if line == None: 
+        break
+      color = "red" if start <= line_num < end else "white"
+      print(colored(f"{str(line_num).rjust(3)}  ", color, attrs=["bold"]), end="")
+      print(line, end="")
+    print()
+  
+  anton.get_past_data_snippets()
+  snippet_index = input("snippet to split: ")
+  while not snippet_index.isdigit() or not (0 <= int(snippet_index) < len(anton.past_data_snippets)):
+    print(colored(text="Invalid snippet index!", color="red", attrs=["bold"]))
+    snippet_index = input("snippet to split: ")
+  
+  snippet = anton.past_data_snippets[int(snippet_index)]
+  print(print_selected_file_contents(snippet.content))
+
+  lines = input(f"lines to include [0:{len(snippet.content.splitlines())}]: ")
+  while not lines or (":" not in lines or not lines.replace(":", "").isdigit()):
+    print(colored(text="Invalid line values!", color="red", attrs=["bold"]))
+    lines = input(f"lines to include [0:{len(snippet.content.splitlines())}]: ")
+
+  start, end = map(int, lines.split(":"))
+  print(print_selected_file_contents(snippet.content, start, end))
+
+  confirm = input("Are you sure? (y/n): ")
+  while confirm.lower() not in ['y', 'n']:
+    print(colored(text="Invalid input! Please enter 'y' or 'n'.", color="red", attrs=["bold"]))
+    confirm = input("Are you sure? (y/n): ")
+
+  if confirm.lower() == "y":
+    split_content = "\n".join(snippet.content.splitlines()[start:end])
+    anton.past_data_snippets.append(DataSnippet(snippet.data_type, snippet.name + "_split", split_content))
+    print(colored(text="Data split successfully!", color="green", attrs=["bold"]))
   else:
-    start, end = 0, len(file_contents)
-  file_contents = "".join(file_contents[start:end])
-  anton.past_data_snippets.append(DataSnippet(data_type, file_name, file_contents))
+    print(colored(text="Data not split.", color="red", attrs=["bold"]))
 
 def command_load_directory_data(command, anton):
   dir_to_search = input("directory to load: ")
