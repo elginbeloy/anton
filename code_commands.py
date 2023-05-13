@@ -25,16 +25,23 @@ def command_copy_code(command, anton):
 
 # Load code from a file
 def command_load_code(command, anton):
+  languages = {"py": "python", "rs": "rust", "cpp": "c++", "java": "java", "html": "html", "js": "javascript"}
   file_name = input("file path (relative or absolute): ")
-  language = input("language: ")
+  
+  file_extension = file_name.split(".")[-1]
+  if file_extension in languages.keys():
+    language = languages[file_extension]
+  else:
+    language = input("language: ")
+
   try:
     with open(file_name, "r") as f:
       file_contents = f.read()
   except FileNotFoundError:
-    print("File not found. Please check the file path and try again.")
+    print(colored("File not found. Please check the file path and try again.", "red", attrs=["bold"]))
     return
   except Exception as e:
-    print(f"An error occurred while reading the file: {e}")
+    print(colored(f"An error occurred while reading the file: {e}", "red", attrs=["bold"]))
     return
   anton.past_code_snippets.append(CodeSnippet(language, file_name, file_contents))
 

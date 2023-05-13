@@ -66,6 +66,17 @@ def command_set_temperature(command, anton):
   except ValueError:
     print(colored("Invalid temperature amount!", "red", attrs=["bold"]))
 
+def command_model(command, anton):
+  print(colored(text=anton.model, color="green", attrs=["bold"]))
+
+def command_set_model(command, anton):
+  try:
+    print(colored(" | ".join(anton.get_available_models()), "green", attrs=["bold"]))
+    model = input("Enter model: ")
+    anton.set_model(model)
+  except ValueError:
+    print(colored("Invalid model!", "red", attrs=["bold"]))
+
 # Misc (idk how to categorize these) Commands
 # =====================================
 def command_create_image(command, anton):
@@ -102,6 +113,8 @@ commands = {
   #"remove-context-window": (command_clear, "Resets the current context window."),
   "set-max-response": (command_set_max_response_tokens, "Sets the maximum number of tokens in an Anton response."),
   "set-temperature": (command_set_temperature, "Sets the temperature for generating Anton's responses."),
+  "model": (command_model, "Prints the current model being used for generating Anton's responses."),
+  "set-model": (command_set_model, "Sets the model to be used for generating Anton's responses."),
 
   # Data related commands
   "data": (command_list_data, "Prints the list of past data snippets."),

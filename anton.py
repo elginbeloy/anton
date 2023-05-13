@@ -77,16 +77,29 @@ def replace_text(text, code_snippets, data_snippets, past_messages):
 
 # Main AntonAI class for interacting with OpenAI's APIs
 class AntonAI:
-  def __init__(self, temperature=0.8, model="gpt-3.5-turbo", max_response_tokens=512):
+  def __init__(self, temperature=0.8, model="gpt-4"):
     self.temperature = temperature
     self.model = model
-    self.max_response_tokens = max_response_tokens
+    self.max_tokens = 8192 if model == "gpt-4" else 4096
+    self.max_response_tokens = self.max_tokens // 2
     self.past_messages = PRESET_PROMPTS['default'][:]
     self.past_code_snippets = []
     self.past_data_snippets = []
     self.current_context_messages = PRESET_PROMPTS['default'][:]
     self.current_focus = ""
     self.last_response = {}
+
+  def get_available_models(self):
+    return ["gpt-4", "gpt-3.5-turbo"]
+
+  def set_model(self, model):
+    if model == "gpt-3.5-turbo":
+      self.max_tokens = 4096
+    elif model == "gpt-4":
+      self.max_tokens = 8192
+    else:
+      raise ValueError(f"Invalid model: {model}")
+    self.model = model
 
   # Set temperature for generating responses
   def set_temperature(self, temperature):
