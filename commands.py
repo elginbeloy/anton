@@ -32,6 +32,9 @@ def command_clear(command, anton):
 
 # Anton LLM Commands
 # =====================================
+def command_get_stats(command, anton):
+  anton.get_stats()
+
 def command_last_message(command, anton):
   print(anton.last_response)
 
@@ -100,6 +103,7 @@ commands = {
   "clear": (command_clear, "Clears the terminal window and resets the context window."),
 
   # Anton LLM related commands
+  "stats": (command_get_stats, "Displays Anton's current settings and context."),
   "last": (command_last_message, "Prints the last response from Anton."),
   "past": (command_past_messages, "Prints the past messages to and from Anton."),
   "set-focus": (command_set_focus, "Sets the focus mode for Anton."),

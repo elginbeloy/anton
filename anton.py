@@ -81,13 +81,21 @@ class AntonAI:
     self.temperature = temperature
     self.model = model
     self.max_tokens = 8192 if model == "gpt-4" else 4096
-    self.max_response_tokens = self.max_tokens // 2
+    self.max_response_tokens = self.max_tokens // 4
     self.past_messages = PRESET_PROMPTS['default'][:]
     self.past_code_snippets = []
     self.past_data_snippets = []
     self.current_context_messages = PRESET_PROMPTS['default'][:]
     self.current_focus = ""
     self.last_response = {}
+
+  def get_stats(self):
+    print("Model:" + " " + colored(self.model, "green", attrs=["bold"]))
+    print("Max Tokens:" + " " + colored(str(self.max_tokens), "green", attrs=["bold"]))
+    print("Max Response Tokens:" + " " + colored(str(self.max_response_tokens), "green", attrs=["bold"]))
+    print("Temperature:" + " " + colored(str(self.temperature), "green", attrs=["bold"]))
+    print("Context: ")
+    self.get_current_context()
 
   def get_available_models(self):
     return ["gpt-4", "gpt-3.5-turbo"]
