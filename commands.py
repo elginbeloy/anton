@@ -100,7 +100,7 @@ def command_system(command, anton):
 commands = {
   "exit": (command_exit, "Exits the program."),
   "help": (command_help, "Prints a list of available commands and their descriptions."),
-  "clear": (command_clear, "Clears the terminal window and resets the context window."),
+  "clear": (command_clear, "Clears the terminal window and prints the intro banner."),
 
   # Anton LLM related commands
   "stats": (command_get_stats, "Displays Anton's current settings and context."),
