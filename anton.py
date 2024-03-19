@@ -1,5 +1,5 @@
-import openai
 import re
+from openai import OpenAI
 from termcolor import colored
 from utils import (
     CodeSnippet,
@@ -11,7 +11,7 @@ from os import getenv
 from dotenv import load_dotenv
 load_dotenv()
 
-openai.api_key = getenv("OPEN_API_KEY")
+OPEN_AI_API_KEY = getenv("OPEN_API_KEY")
 
 PRESET_PROMPTS = {
   "default": [
@@ -98,7 +98,7 @@ class AntonAI:
     self.get_current_context()
 
   def get_available_models(self):
-    return ["gpt-4", "gpt-3.5-turbo"]
+    return ["gpt-4", "gpt-3.5-turbo", "gpt-4-32k"]
 
   def set_model(self, model):
     if model == "gpt-3.5-turbo":
@@ -139,7 +139,8 @@ class AntonAI:
     prompt = replace_text(prompt, self.past_code_snippets, self.past_data_snippets, self.past_messages)
     self.past_messages.append({"role": "user", "content": prompt})
     self.current_context_messages.append({"role": "user", "content": prompt})
-    response = openai.ChatCompletion.create(
+    client = OpenAI(api_key=OPEN_AI_API_KEY)
+    response = client.chat.completions.create(
       model=self.model,
       temperature=self.temperature,
       max_tokens=self.max_response_tokens,

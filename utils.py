@@ -19,11 +19,9 @@ BANNER = r'''
      /:/  /        /:/  /                     \::/  /        /:/  /   
      \/__/         \/__/                       \/__/         \/__/    
 '''
-IMAGE_BANNER = climage.convert('./favicon.png', is_unicode=True)
 
 def show_banner():
   os.system("clear")
-  print(IMAGE_BANNER)
   print(colored(BANNER, "cyan", attrs=["bold"]))
   print()
   print()
