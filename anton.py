@@ -98,13 +98,15 @@ class AntonAI:
     self.get_current_context()
 
   def get_available_models(self):
-    return ["gpt-4", "gpt-3.5-turbo", "gpt-4-32k"]
+    return ["gpt-4", "gpt-3.5-turbo", "gpt-4-turbo-preview"]
 
   def set_model(self, model):
     if model == "gpt-3.5-turbo":
       self.max_tokens = 4096
     elif model == "gpt-4":
       self.max_tokens = 8192
+    elif model == "gpt-4-turbo-preview":
+      self.max_tokens = 32000
     else:
       raise ValueError(f"Invalid model: {model}")
     self.model = model

@@ -2,7 +2,6 @@ from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import Terminal256Formatter
 from termcolor import colored
-import climage
 import os
 import re
 
