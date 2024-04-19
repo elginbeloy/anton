@@ -84,11 +84,7 @@ def command_set_model(command, anton):
 # =====================================
 def command_create_image(command, anton):
   prompt = input("image to create: ")
-  amount = int(input("# of images: "))
-  if amount < 1 or amount > 10:
-    print(colored("Invalid amount!", "red", attrs=["bold"]))
-    return
-  print(anton.create_image(prompt, amount))
+  anton.create_image(prompt)
 
 def command_system(command, anton):
   command = input(colored("$ ", "green", attrs=["bold"]))

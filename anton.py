@@ -185,7 +185,7 @@ class AntonAI:
         for line_num, line in enumerate(snippet_lines[-5:]):
           highlighted_line = highlight_code(line, language)
           print(colored(f"{str((len(snippet_lines) - 4) + line_num).rjust(3)}  ", "white", attrs=["bold"]) + highlighted_line, end="")
-     
+
       print()
 
     # Display past code snippets
@@ -207,7 +207,7 @@ class AntonAI:
         print()
         for line_num, line in enumerate(snippet_lines[-5:]):
           print(colored(f"{str((len(snippet_lines) - 4) + line_num).rjust(3)}  ", "white", attrs=["bold"]) + line)
-     
+
       print()
 
   # Display current context window Anton uses to create responses
@@ -217,10 +217,15 @@ class AntonAI:
     print()
 
   # Create images using OpenAI's API
-  def create_image(self, prompt, amount):
-    response = openai.Image.create(
+  def create_image(self, prompt, amount=1):
+    client = OpenAI(api_key=OPEN_AI_API_KEY)
+    response = client.images.generate(
+      model="dall-e-3",
       prompt=prompt,
+      size="1792x1024",
+      quality="hd",
       n=amount,
-      size="1024x1024",
     )
-    return response
+
+    image_url = response.data[0].url
+    print(image_url)
